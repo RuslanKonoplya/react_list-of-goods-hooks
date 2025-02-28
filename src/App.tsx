@@ -17,10 +17,10 @@ export const goodsFromServer = [
 ];
 
 interface T {
-  goods :string[]
+  goods: string[];
 }
 
-const GoodList :React.FC<T> =({ goods}) => {
+const GoodList: React.FC<T> = ({ goods }) => {
   return (
     <ul>
       {goods.map(good => (
@@ -32,18 +32,24 @@ const GoodList :React.FC<T> =({ goods}) => {
   );
 };
 
-interface FilterParams{
-  sortField: string
+enum SortField {
+  alfabet = 'alfabet',
+  length = 'length',
+
 }
 
-function getPreparedGoods(goods :string[], { sortField}  :FilterParams, reversed : boolean) {
+function getPreparedGoods(
+  goods: string[],
+  { sortField }: { sortField: SortField | '' },
+  reversed: boolean,
+) {
   const preparedGoods = [...goods];
 
-  if (sortField === 'length') {
+  if (sortField === SortField.length) {
     preparedGoods.sort((elem1, elem2) => elem1.length - elem2.length);
   }
 
-  if (sortField === 'alfabet') {
+  if (sortField === SortField.alfabet) {
     preparedGoods.sort((elem1, elem2) => elem1.localeCompare(elem2));
   }
 
@@ -54,33 +60,18 @@ function getPreparedGoods(goods :string[], { sortField}  :FilterParams, reversed
   return preparedGoods;
 }
 
-
-
-
-
-
-
 export const App = () => {
+  const [rev, setRev] = useState<boolean>(false);
+  const [sortField, setSortField] = useState<SortField | ''>('');
 
-
-
-
-
-
-
-
-  const [rev, setRev] = useState<boolean>(false) ;
-  const [sortField, setSortField] = useState<string>('');
-
-
-  const visibleGoods = getPreparedGoods(goodsFromServer, { sortField },rev);
+  const visibleGoods = getPreparedGoods(goodsFromServer, { sortField} , rev);
 
   const resetGoods = () => {
     setSortField('');
     setRev(false);
   };
 
-  const areArraysEqual = (arr1: string[], arr2 :string[]) =>
+  const areArraysEqual = (arr1: string[], arr2: string[]) =>
     arr1.length === arr2.length &&
     arr1.every((el, index) => el === arr2[index]);
 
@@ -93,7 +84,7 @@ export const App = () => {
           type="button"
           className={`button is-warning ${sortField !== 'alfabet' ? 'is-light' : ''}`}
           onClick={() => {
-            setSortField('alfabet');
+            setSortField(SortField.alfabet);
           }}
         >
           Sort alphabetically
@@ -102,7 +93,7 @@ export const App = () => {
         <button
           type="button"
           className={`button is-warning ${sortField !== 'length' ? 'is-light' : ''}`}
-          onClick={() => setSortField('length')}
+          onClick={() => setSortField(SortField.length)}
         >
           Sort by length
         </button>
